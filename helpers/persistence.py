@@ -1,21 +1,62 @@
-from tinydb import TinyDB
+from datetime import datetime, time, timedelta
+from tinydb import TinyDB, Query
+from helpers.utils import convert_local_iso_time_to_utc
+from helpers.sourcetypeenum import SourceType
+from helpers.ina260measurement import Ina260Measurement
+
+MEASUREMENTS_TABLE_NAME = 'measurements'
 
 class Persistence:
     """
     Library module which provides convenience methods to persist power data
-    
+
     Data is persisted to a JSON file using TinyDB for simplicity.  This class
     provides access to data in a specific file provided during class initialization.
-    The assumption is that data includes voltage & current readings for one or more
-    solar or wind power sources for each moment in time, however it is possible to
-    leave readings empty for any given timestamp.
+    The assumption is that data includes voltage & current readings for one solar
+    or wind power sources for each moment in time.
 
-    Schema:
-        timestamp:    string UTC ISO time for the measurements
-        measurements: array of voltage and current measurements and associated metadata
-            name:     string indicating name of power source
-            type:     string indicating power type (e.g., SOLAR)
-            voltage:  float voltage reading
-            current:  float current reading
-        
+    Schema matches the structure of Ina260Measurement
+    """
+    def __init__(self, path):
+        self.db = TinyDB(path)
+        self.table = self.db.table(MEASUREMENTS_TABLE_NAME)
+
+    def save(self, ina260Measurement):
+        self.table.insert(ina260Measurement.get_json())
+
+    def upsert(self, ina260Measurement):
+        query = Query()
+        self.table.upsert(ina260Measurement.get_json(), query.timestamp == ina260Measurement.timestamp)
+
+    def get_latest(self):
+        data = self.table.get(doc_id=len(self.table))
+        return Ina260Measurement(
+            data['source_name'],
+            SourceType(data['source_type']),
+            data['voltage_measurement'],
+            data['current_measurement']
+        )
+
+    def get_date(self, date):
+        start = datetime.combine(date, time())
+        end = datetime.combine(date + timedelta(1), time())
+        return self.get_date_range(start, end)
+
+    def get_date_range(self, startDate, endDate):
+        if (endDate < startDate):
+            raise TypeError('end date is before start date')
+
+        startUtc = convert_local_iso_time_to_utc(startDate.isoformat())
+        endUtc = convert_local_iso_time_to_utc(endDate.isoformat())
+        Measurement = Query()
+        results = self.table.search((Measurement.timestamp >= startUtc) & (Measurement.timestamp < endUtc))
+        return [ self.__generate_measurement__(data) for data in results ]
+
+    def __generate_measurement__(self, data):
+        return Ina260Measurement(
+            data['source_name'],
+            SourceType(data['source_type']),
+            data['voltage_measurement'],
+            data['current_measurement']
+        )
 

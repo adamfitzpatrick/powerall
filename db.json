@@ -1,0 +1,1 @@
+{"_default": {"1": {"timestamp": "2020-03-22T18:11:30.629484", "source_type": "WIND", "voltage_measurement": 24342, "current_measurement": -31307, "source_name": "not solar"}, "2": {"timestamp": "2020-03-22T18:12:16.754845", "source_type": "SOLAR", "voltage_measurement": 6401, "current_measurement": 1559, "source_name": "solar"}}}

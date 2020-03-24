@@ -4,13 +4,16 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-unittest2 = "*"
+pylint = "*"
+rope = "*"
+pyhamcrest = "*"
 
 [packages]
 tinydb = "*"
 gpiozero = "*"
 smbus2 = "*"
 enum34 = "*"
+python-dateutil = "*"
 
 [requires]
 python_version = "3.7"
