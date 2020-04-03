@@ -1,5 +1,5 @@
 import unittest2
-import helpers.utils as utils
+import lib.utils as utils
 
 class UtilsTestSuite(unittest2.TestCase):
     def setUp(self):

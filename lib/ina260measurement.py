@@ -1,6 +1,6 @@
 from datetime import datetime
-from helpers.utils import generate_16bit_from_8bit_array, convert_twos_complement_to_decimal
-from helpers.sourcetypeenum import SourceType
+from lib.utils import generate_16bit_from_8bit_array, convert_twos_complement_to_decimal
+from lib.sourcetypeenum import SourceType
 
 class Ina260Measurement:
     """
@@ -24,6 +24,10 @@ class Ina260Measurement:
     _voltage_multiplier = 0.00125
     _current_multiplier = 0.00125
     _json_fields = { 'timestamp', 'source_name', 'source_type', 'voltage_measurement', 'current_measurement' }
+
+    DEVICE_ADDRESS = 0x40
+    CURRENT_REGISTER = 0x01
+    VOLTAGE_REGISTER = 0x02
 
     def __init__(self, source_name, source_type, voltage_measurement, current_measurement):
         """

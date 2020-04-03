@@ -1,6 +1,6 @@
 import unittest
-from helpers.ina260measurement import Ina260Measurement
-from helpers.sourcetypeenum import SourceType
+from lib.ina260measurement import Ina260Measurement
+from lib.sourcetypeenum import SourceType
 
 class Ina250MeasurementTestSuite(unittest.TestCase):
     def setUp(self):

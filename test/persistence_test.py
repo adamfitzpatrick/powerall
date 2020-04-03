@@ -2,11 +2,11 @@ import unittest
 from unittest.mock import patch, MagicMock
 from hamcrest import assert_that, not_none, has_entries, instance_of
 from datetime import datetime, timedelta
-from helpers.persistence import Persistence
-from helpers.ina260measurement import Ina260Measurement
-from helpers.sourcetypeenum import SourceType
+from lib.persistence import Persistence
+from lib.ina260measurement import Ina260Measurement
+from lib.sourcetypeenum import SourceType
 
-@patch('helpers.persistence.TinyDB')
+@patch('lib.persistence.TinyDB')
 class PersistenceTestSuite(unittest.TestCase):
 
     def setUp(self):
@@ -87,7 +87,6 @@ class PersistenceTestSuite(unittest.TestCase):
             persistence.get_date_range(today, yesterday)
         self.assertIn('end date is before', cm.exception.args[0])
         persistence.table.search.assert_not_called()
-
 
 if __name__ == '__main__':
     unittest.main()
