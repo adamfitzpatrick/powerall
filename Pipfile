@@ -14,6 +14,8 @@ gpiozero = "*"
 smbus2 = "*"
 enum34 = "*"
 python-dateutil = "*"
+falcon = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.7"

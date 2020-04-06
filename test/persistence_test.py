@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 from hamcrest import assert_that, not_none, has_entries, instance_of
 from datetime import datetime, timedelta
+from tinydb import where
 from lib.persistence import Persistence
 from lib.ina260measurement import Ina260Measurement
 from lib.sourcetypeenum import SourceType
@@ -10,9 +11,9 @@ from lib.sourcetypeenum import SourceType
 class PersistenceTestSuite(unittest.TestCase):
 
     def setUp(self):
-        self.measurement = Ina260Measurement('solar', SourceType.SOLAR, [5, 1], [6, 3])
+        self.measurement = Ina260Measurement('solar', SourceType.SOLAR, [5, 1], [6, 3], 'timestamp')
         self.json_object_matcher = {
-            'timestamp': not_none(),
+            'timestamp': 'timestamp',
             'source_name': 'solar',
             'source_type': 'SOLAR',
             'voltage_measurement': [5, 1],
@@ -42,6 +43,18 @@ class PersistenceTestSuite(unittest.TestCase):
             persistence.table.upsert.call_args[0][0],
             has_entries(self.json_object_matcher)
         )
+
+    def test_get_all(self, TinyDBMock):
+        persistence = Persistence('path/to/db')
+        persistence.table = MagicMock()
+        persistence.table.search.return_value = [self.json_response]
+        result = persistence.get_all()
+        self.assertEqual(len(result), 1)
+        assert_that(
+            result[0],
+            instance_of(Ina260Measurement)
+        )
+        persistence.table.search.assert_called_with(where('timestamp').exists())
 
     def test_get_latest(self, TinyDBMock):
         persistence = Persistence('path/to/db')

@@ -17,6 +17,10 @@ class Ina250MeasurementTestSuite(unittest.TestCase):
         self.assertEqual(self.data, self.measurement.voltage_measurement)
         self.assertEqual(self.data, self.measurement.current_measurement)
 
+    def test_init_with_timestamp(self):
+        measurement = Ina260Measurement('solar', SourceType.SOLAR, self.data, self.data, 'timestamp')
+        self.assertEqual(measurement.timestamp, 'timestamp')
+
     def test_voltage(self):
         self.assertAlmostEqual(self.decimal * 0.00125, self.measurement.voltage)
 
@@ -33,6 +37,11 @@ class Ina250MeasurementTestSuite(unittest.TestCase):
         self.assertEqual(json['source_type'], 'SOLAR')
         self.assertEqual(json['voltage_measurement'], self.data)
         self.assertEqual(json['current_measurement'], self.data)
+
+    def test_get_converted_json(self):
+        json = self.measurement.get_converted_json()
+        self.assertAlmostEqual(json['voltage'], self.measurement.voltage)
+        self.assertAlmostEqual(json['current'], self.measurement.current)
 
 if __name__ == '__main__':
     unittest.main()

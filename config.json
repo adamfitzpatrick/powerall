@@ -1,0 +1,5 @@
+{
+    "measurementApiPort": 9001,
+    "webServerPort": 9010,
+    "dbJsonFilename": "data.json"
+}

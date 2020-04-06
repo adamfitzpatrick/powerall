@@ -24,18 +24,22 @@ class Ina260Measurement:
     _voltage_multiplier = 0.00125
     _current_multiplier = 0.00125
     _json_fields = { 'timestamp', 'source_name', 'source_type', 'voltage_measurement', 'current_measurement' }
+    _converted_json_fields = { 'timestamp', 'source_name', 'source_type', 'voltage', 'current' }
 
     DEVICE_ADDRESS = 0x40
     CURRENT_REGISTER = 0x01
     VOLTAGE_REGISTER = 0x02
 
-    def __init__(self, source_name, source_type, voltage_measurement, current_measurement):
+    def __init__(self, source_name, source_type, voltage_measurement, current_measurement, timestamp=None):
         """
         Initialize the class data
 
         Voltage and current are provided in a length 2 array of 8 bit values.
         """
-        self.timestamp = datetime.utcnow().isoformat()
+        if (timestamp == None):
+            self.timestamp = datetime.utcnow().isoformat() + 'Z'
+        else:
+            self.timestamp = timestamp
         self.source_name = source_name
         self.source_type = source_type.value
         self.voltage_measurement = voltage_measurement
@@ -60,4 +64,7 @@ class Ina260Measurement:
 
     def get_json(self):
         return { field: getattr(self, field) for field in self._json_fields }
+
+    def get_converted_json(self):
+        return { field: getattr(self, field) for field in self._converted_json_fields }
 

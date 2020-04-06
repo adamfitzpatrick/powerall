@@ -1,5 +1,5 @@
 from datetime import datetime, time, timedelta
-from tinydb import TinyDB, Query
+from tinydb import TinyDB, Query, where
 from lib.utils import convert_local_iso_time_to_utc
 from lib.sourcetypeenum import SourceType
 from lib.ina260measurement import Ina260Measurement
@@ -28,14 +28,13 @@ class Persistence:
         query = Query()
         self.table.upsert(ina260Measurement.get_json(), query.timestamp == ina260Measurement.timestamp)
 
+    def get_all(self):
+        results = self.table.search(where('timestamp').exists())
+        return [ self.__generate_measurement(data) for data in results ]
+
     def get_latest(self):
         data = self.table.get(doc_id=len(self.table))
-        return Ina260Measurement(
-            data['source_name'],
-            SourceType(data['source_type']),
-            data['voltage_measurement'],
-            data['current_measurement']
-        )
+        return self.__generate_measurement(data)
 
     def get_date(self, date):
         start = datetime.combine(date, time())
@@ -50,13 +49,14 @@ class Persistence:
         endUtc = convert_local_iso_time_to_utc(endDate.isoformat())
         Measurement = Query()
         results = self.table.search((Measurement.timestamp >= startUtc) & (Measurement.timestamp < endUtc))
-        return [ self.__generate_measurement__(data) for data in results ]
+        return [ self.__generate_measurement(data) for data in results ]
 
-    def __generate_measurement__(self, data):
+    def __generate_measurement(self, data):
         return Ina260Measurement(
             data['source_name'],
             SourceType(data['source_type']),
             data['voltage_measurement'],
-            data['current_measurement']
+            data['current_measurement'],
+            data['timestamp']
         )
 

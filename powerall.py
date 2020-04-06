@@ -36,7 +36,7 @@ class CollectSolarData:
             sleep(self.sample_interval)
 
     def start(self):
-        print("Starting collection: %s", self.data_name)
+        print("Starting collection:", self.data_name)
         self.thread = Thread(target=self._sample_loop)
         self.thread.start()
 

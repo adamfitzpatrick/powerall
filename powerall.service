@@ -1,0 +1,11 @@
+[Unit]
+description = Power system data collection
+
+[Service]
+WorkingDirectory=/opt/powerall
+Restart=always
+RestartSec=30
+ExecStart = pipenv run python powerall.py
+
+[Install]
+WantedBy = multi-user.target
