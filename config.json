@@ -1,4 +1,12 @@
 {
+    "dbPath": "/var/powerall/data/",
+    "dbFile": "data.json",
+    "sampleInterval": 300,
+    "sampleSets": [{
+        "name": "HQST 100W panel",
+        "interval": 300,
+        "sourceType": "SOLAR"
+    }],
     "measurementApiPort": 9001,
     "webServerPort": 9010,
     "dbJsonFilename": "data.json"

@@ -1,30 +1,30 @@
 from threading import Thread
 from time import sleep
+import json
 
 from lib.sourcetypeenum import SourceType
 from lib.i2c import I2C
 from lib.ina260measurement import Ina260Measurement
 from lib.persistence import Persistence
 
-class CollectSolarData:
+class CollectData:
     """
     Primary class to collect samples from a specific solar source at specified intervals.
     Collects voltage and current information at each point in time and persists the data
     to using the persistence library.
     """
 
-    _source_type = SourceType.SOLAR
-
-    def __init__(self, data_name, sample_interval, db_filename):
+    def __init__(self, data_name, sample_interval, source_type, db_filename):
         self.data_name = data_name
         self.sample_interval = sample_interval
+        self.source_type = SourceType[source_type]
         self.persistence = Persistence(db_filename)
         self.i2c = I2C(Ina260Measurement.DEVICE_ADDRESS)
 
     def _collect_sample(self):
         sample = Ina260Measurement(
             self.data_name,
-            self._source_type,
+            self.source_type,
             self.i2c.read_word(Ina260Measurement.VOLTAGE_REGISTER),
             self.i2c.read_word(Ina260Measurement.CURRENT_REGISTER)
         )
@@ -40,6 +40,15 @@ class CollectSolarData:
         self.thread = Thread(target=self._sample_loop)
         self.thread.start()
 
+def startSamplers(sample):
+    collector = CollectData(sample['name'], sample['interval'], sample['sourceType'], db_location)
+    collector.start()
+
 if __name__ == "__main__":
-    solar_collector = CollectSolarData('HQST 100W panel', 300, './data.json')
-    solar_collector.start()
+    with open('config.json') as config_file:
+        data = json.load(config_file)
+
+    db_location = data['dbPath'] + data['dbFile']
+    sample_sets = data['sampleSets']
+
+    [ startSamplers(sample) for sample in sample_sets ]
