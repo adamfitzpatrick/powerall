@@ -50,16 +50,26 @@ module.exports = {
       use: { loader: 'handlebars-loader' }
     }, {
       test: /\.css$/,
+      exclude: /\@material/,
       use: [{
         loader: 'style-loader'
       }, {
-        loader: 'typings-for-css-modules-loader',
+        loader: '@teamsupercell/typings-for-css-modules-loader'
+      }, {
+        loader: 'css-loader',
         options: {
-          modules: true,
-          namedExport: true,
-          localIdentName: '[name]__[local]--[hash:base64:5]'
+          modules: {
+            mode: 'local',
+            localIdentName: '[name]__[local]--[hash:base64:5]'
+          }
         }
       }]
+    }, {
+      test: /\@material.+?\.css$/,
+      use: [
+        { loader: 'style-loader' },
+        { loader: 'css-loader' }
+      ]
     }, {
       test: /\.(svg|jpg|png)$/,
       loader: 'url-loader',

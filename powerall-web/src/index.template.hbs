@@ -21,6 +21,15 @@
         crossorigin="{{ this.crossorigin }}"
       ></script>
     {{/each}}
+    <style>
+      :root {
+        --primary: #8884d8;
+        --secondary: #82ca9c;
+        --mdc-theme-primary: var(--primary);
+        --mdc-theme-secondary: var(--secondary);
+      }
+      body { margin: 0; }
+    </style>
 </head>
 
 <body>

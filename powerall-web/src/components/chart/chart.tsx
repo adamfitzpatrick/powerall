@@ -5,27 +5,15 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Label } 
 import { Ina260Measurement } from '@models'
 import { load } from '@services'
 
+import * as styles from './chart.css'
+
 type DataType = Ina260Measurement[] | null
 
 const tickFormatter = (time: number) => moment(time).format('hh:mm')
 
 const tooltipLabelFormatter = (time: number) => {
-    console.log(moment().utcOffset())
     return moment(time).format('MMM DD YYYY HH:mm')
 }
-
-const formatterInvestigator = (value: string, entry: string, index: number) => {
-    console.log(value, entry, index)
-    return <div>no</div>
-}
-
-const style = {
-    position: 'fixed',
-    width: '75vw',
-    height: '75vh',
-    top: '12.5vh',
-    left: '12.5vw'
-} as React.CSSProperties
 
 export function Chart () {
     const [data, setData] = React.useState<DataType>(null)
@@ -33,13 +21,12 @@ export function Chart () {
         load().then(response => setData(response))
         return null
     }
-    console.log(data)
 
     return (
-        <div style={style}>
+        <div className={styles.chart}>
             <LineChart
-                width={0.75 * window.innerWidth}
-                height={0.75 * window.innerHeight}
+                width={0.85 * window.innerWidth}
+                height={0.85 * window.innerHeight}
                 data={data}
                 margin={{
                     top: 5, right: 30, left: 20, bottom: 5,
