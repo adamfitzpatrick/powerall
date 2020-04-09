@@ -1,4 +1,7 @@
 import falcon
+import json
+from dateutil import parser
+
 from lib.persistence import Persistence
 
 class CorsResponse(object):
@@ -26,13 +29,34 @@ class AllDataResource(object):
         res.media = [ data.get_converted_json() for data in results ]
         res.status = falcon.HTTP_200
 
+class DateRangeDataResource(object):
+    """
+    Class to retrieve a subset of available data based on an inclusive start datetime
+    and end datetime.
+    """
+
+    def __init__(self, filename):
+        self.persistence = Persistence(filename)
+
+    def on_post(self, req, res):
+        body = json.loads(req.stream.read(req.content_length or 0).decode('utf-8'))
+        start = parser.parse(body['startDate'])
+        end = parser.parse(body['endDate'])
+        results = self.persistence.get_date_range(start, end)
+        res.media = [ data.get_converted_json() for data in results ]
+        res.status = falcon.HTTP_200
+
 app = falcon.API(middleware=[
     CorsResponse()
 ])
 
-all_data = AllDataResource('./data.json')
+with open('config.json') as config_file:
+    data = json.load(config_file)
+
+db_location = data['dbPath'] + data['dbFile']
+
+all_data = AllDataResource(db_location)
 app.add_route("/", all_data)
 
-if (__name__ == "__main__"):
-    resource = AllDataResource('./data.json')
-    resource.on_get('', '')
+data_range_data = DateRangeDataResource(db_location)
+app.add_route("/dates", data_range_data)

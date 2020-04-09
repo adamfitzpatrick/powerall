@@ -1,29 +1,33 @@
 import * as React from 'react'
-import { Button } from '@rmwc/button'
-import '@material/button/dist/mdc.button.css'
-import { Fab } from '@rmwc/fab'
-import '@material/fab/dist/mdc.fab.css'
+import Fab from '@material-ui/core/Fab'
 
 import { Timeframe } from '@components'
 import * as styles from './menu.css'
+import { DateSelection } from '@models'
+import { Downloader } from '../downloader/downloader'
 
-export function Menu () {
+interface MenuProps {
+    dateSelection: DateSelection | null
+    setDateSelection: (dateSelection: DateSelection | null) => void
+}
+
+export function Menu ({ dateSelection, setDateSelection }: MenuProps) {
     const [open, setOpen] = React.useState<boolean>(false)
 
-    const onClick = () => setOpen(!open)
+    const onClick = () => setOpen(true)
+
+    const onClose = (dateSelection: DateSelection | null) => {
+        setDateSelection(dateSelection)
+        setOpen(false)
+    }
 
     return (
         <div className={styles.menu}>
-            <Fab
-                className={styles.button}
-                icon='settings'
-                onClick={onClick}
-            />
-            <Fab
-                className={styles.button}
-                icon='save_alt'
-            />
-            <Timeframe open={open} onClose={onClick} />
+            <Fab color='primary' onClick={onClick}>
+                <span className='material-icons'>settings</span>
+            </Fab>
+            <Downloader dateSelection={dateSelection} />
+            <Timeframe open={open} onClose={onClose} dateSelection={dateSelection} />
         </div>
     )
 }

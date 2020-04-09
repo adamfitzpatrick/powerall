@@ -1,42 +1,118 @@
 import * as React from 'react'
+import 'date-fns'
+import DateFnsUtils from '@date-io/date-fns'
+import Button from '@material-ui/core/Button'
+import Drawer from '@material-ui/core/Drawer'
+import Fab from '@material-ui/core/Fab'
 import {
-    Drawer,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerContent,
-    DrawerAppContent
-} from '@rmwc/drawer'
-import { Fab } from '@rmwc/fab'
-import '@material/drawer/dist/mdc.drawer.css'
-import '@material/fab/dist/mdc.fab.css'
+    MuiPickersUtilsProvider,
+    KeyboardDatePicker
+} from '@material-ui/pickers'
 
 import * as styles from './timeframe.css'
-
-const drawerStyle: React.CSSProperties = {
-    minHeight: '100vh'
-}
+import { DateSelection } from '@models'
 
 interface TimeframeProps {
-    open: boolean,
-    onClose: () => void
+    open: boolean
+    onClose: (dateSelection: DateSelection | null) => void
+    dateSelection: DateSelection | null
 }
 
-export function Timeframe ({ open, onClose }: TimeframeProps) {
+export function Timeframe ({ open, onClose, dateSelection }: TimeframeProps) {
+    const [ startDate, setStartDate ] = React.useState<Date | null>(dateSelection && dateSelection.startDate)
+    const [ endDate, setEndDate ] = React.useState<Date | null>(dateSelection && dateSelection.endDate)
+
+    React.useEffect(() => {
+        if (startDate && (!endDate || endDate < startDate)) {
+            handleEndSelection(startDate)
+        }
+    }, [startDate])
+
+    React.useEffect(() => {
+        if (endDate && (!startDate || endDate < startDate)) {
+            handleStartSelection(endDate)
+        }
+    }, [endDate])
+
+    const stripTime = (date: Date, end?: boolean) => {
+        const stripped = new Date(date)
+        stripped.setHours(end ? 23: 0)
+        stripped.setMinutes(end ? 59: 0)
+        stripped.setSeconds(end ? 59.999 : 0)
+        return stripped
+    }
+
+    const handleStartSelection = (date: Date) => {
+        setStartDate(stripTime(date))
+    }
+
+    const handleEndSelection = (date: Date) => {
+        setEndDate(stripTime(date, true))
+    }
+
+    const handleClearDates = () => {
+        setStartDate(null)
+        setEndDate(null)
+        onClose(null)
+    }
+
+    const handleClose = () => {
+        if (startDate && endDate) {
+            onClose({ startDate, endDate })
+            return
+        }
+        onClose(null)
+    }
+
     return (
         <div className={styles.timeframe}>
-            <Drawer modal dismissible open={open}>
-                <DrawerHeader>
-                    <DrawerTitle>
-                        Select data timeframe
-                    </DrawerTitle>
-                </DrawerHeader>
-                <DrawerContent>
-                    <div className={styles.content}>
-                        <Fab icon='check' onClick={onClose} />
-                    </div>
-                </DrawerContent>
+            <Drawer anchor='left' open={open}>
+                <div className={styles.content}>
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <div className={styles.datePickerRow}>
+                            <KeyboardDatePicker
+                                disableToolbar
+                                variant='inline'
+                                margin="normal"
+                                id="start-date-picker"
+                                label="Start"
+                                format="MM/dd/yyyy"
+                                value={startDate}
+                                onChange={handleStartSelection}
+                                autoOk={true}
+                                KeyboardButtonProps={{
+                                    'aria-label': 'change date',
+                                }}
+                            />
+                        </div>
+                        <div className={styles.datePickerRow}>
+                            <KeyboardDatePicker
+                                disableToolbar
+                                variant='inline'
+                                margin="normal"
+                                id="end-date-picker"
+                                label="End"
+                                format="MM/dd/yyyy"
+                                value={endDate}
+                                onChange={handleEndSelection}
+                                autoOk={true}
+                                KeyboardButtonProps={{
+                                    'aria-label': 'change date',
+                                }}
+                            />
+                        </div>
+                    </MuiPickersUtilsProvider>
+                    <Button
+                        color="secondary"
+                        onClick={handleClearDates}
+                    >
+                        clear dates
+                    </Button>
+                    <Fab color='primary' onClick={handleClose}>
+                        <span className='material-icons'>check</span>
+                    </Fab>
+                </div>
             </Drawer>
-            <DrawerAppContent style={drawerStyle} />
         </div>
     )
 }

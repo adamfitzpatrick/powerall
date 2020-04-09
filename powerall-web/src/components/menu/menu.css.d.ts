@@ -1,6 +1,5 @@
 declare namespace MenuCssModule {
   export interface IMenuCss {
-    button: string;
     menu: string;
   }
 }

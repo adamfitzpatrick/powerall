@@ -11,7 +11,7 @@
   "author": "Adam Fitzpatrick",
   "license": "MIT",
   "devDependencies": {
-    "@date-io/date-fns": "^2.5.0",
+    "@date-io/date-fns": "v1",
     "@material-ui/core": "^4.9.9",
     "@material-ui/pickers": "^3.2.10",
     "@material-ui/types": "^5.0.0",
@@ -25,7 +25,7 @@
     "@types/uuid": "^7.0.0",
     "awesome-typescript-loader": "^5.2.1",
     "css-loader": "^3.5.1",
-    "date-fns": "^2.11.1",
+    "date-fns": "latest",
     "faucet": "0.0.1",
     "handlebars": "^4.7.6",
     "handlebars-loader": "^1.7.1",

@@ -1,6 +1,8 @@
 declare namespace TimeframeCssModule {
   export interface ITimeframeCss {
     content: string;
+    datePickerRow: string;
+    drawer: string;
     timeframe: string;
   }
 }

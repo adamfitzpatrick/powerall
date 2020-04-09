@@ -2,10 +2,15 @@ import * as React from 'react'
 import * as moment from 'moment'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Label } from 'recharts'
 
-import { Ina260Measurement } from '@models'
+import { Ina260Measurement, DateSelection } from '@models'
 import { load } from '@services'
 
 import * as styles from './chart.css'
+import { setDate } from 'date-fns'
+
+interface ChartProps {
+    dateSelection: DateSelection | null
+}
 
 type DataType = Ina260Measurement[] | null
 
@@ -15,12 +20,11 @@ const tooltipLabelFormatter = (time: number) => {
     return moment(time).format('MMM DD YYYY HH:mm')
 }
 
-export function Chart () {
+export function Chart ({ dateSelection }: ChartProps) {
     const [data, setData] = React.useState<DataType>(null)
-    if (!data) {
-        load().then(response => setData(response))
-        return null
-    }
+    React.useEffect(() => {
+        load(dateSelection).then(response => setData(response))
+    }, [dateSelection])
 
     return (
         <div className={styles.chart}>
