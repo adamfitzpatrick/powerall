@@ -1,0 +1,9 @@
+[Unit]
+description = Power system data query and display
+
+[Service]
+WorkingDirectory=/opt/powerall
+ExecStart = pipenv run python powerall_server.py
+
+[Install]
+WantedBy = multi-user.target
