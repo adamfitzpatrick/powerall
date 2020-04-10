@@ -1,5 +1,5 @@
 [Unit]
-description = Power system data query and display
+description = Power system data query
 
 [Service]
 WorkingDirectory=/opt/powerall

@@ -1,3 +1,5 @@
+import sys
+import getopt
 import falcon
 import json
 from dateutil import parser
@@ -22,10 +24,11 @@ class AllDataResource(object):
     """
 
     def __init__(self, filename):
-        self.persistence = Persistence(filename)
+        self.filename = filename
 
     def on_get(self, req, res):
-        results = self.persistence.get_all()
+        persistence = Persistence(self.filename)
+        results = persistence.get_all()
         res.media = [ data.get_converted_json() for data in results ]
         res.status = falcon.HTTP_200
 
@@ -36,13 +39,14 @@ class DateRangeDataResource(object):
     """
 
     def __init__(self, filename):
-        self.persistence = Persistence(filename)
+        self.filename = filename
 
     def on_post(self, req, res):
+        persistence = Persistence(self.filename)
         body = json.loads(req.stream.read(req.content_length or 0).decode('utf-8'))
         start = parser.parse(body['startDate'])
         end = parser.parse(body['endDate'])
-        results = self.persistence.get_date_range(start, end)
+        results = persistence.get_date_range(start, end)
         res.media = [ data.get_converted_json() for data in results ]
         res.status = falcon.HTTP_200
 
@@ -60,3 +64,4 @@ app.add_route("/", all_data)
 
 data_range_data = DateRangeDataResource(db_location)
 app.add_route("/dates", data_range_data)
+

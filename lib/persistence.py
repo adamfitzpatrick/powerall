@@ -19,7 +19,7 @@ class Persistence:
     """
     def __init__(self, path):
         self.db = TinyDB(path)
-        self.table = self.db.table(MEASUREMENTS_TABLE_NAME)
+        self.table = self.db.table(MEASUREMENTS_TABLE_NAME, cache_size=0)
 
     def save(self, ina260Measurement):
         self.table.insert(ina260Measurement.get_json())
