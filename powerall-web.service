@@ -1,0 +1,9 @@
+[Unit]
+description = Power system website
+
+[Service]
+WorkingDirectory=/opt/powerall/powerall-web
+ExecStart = npm start
+
+[Install]
+WantedBy = multi-user.target
